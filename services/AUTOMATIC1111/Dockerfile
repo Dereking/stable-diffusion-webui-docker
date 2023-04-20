@@ -1,5 +1,7 @@
 FROM alpine/git:2.36.2 as download
 
+
+
 COPY clone.sh /clone.sh
 
 RUN . /clone.sh taming-transformers https://github.com/CompVis/taming-transformers.git 24268930bf1dce879235a7fddd0b2355b84d7ea6 \
@@ -17,15 +19,21 @@ RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interr
 
 
 FROM alpine:3.17 as xformers
-RUN apk add --no-cache aria2
-RUN aria2c -x 5 --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/5.0.0/xformers-0.0.17.dev449-cp310-cp310-manylinux2014_x86_64.whl'
+#RUN apk add --no-cache aria2
+#RUN aria2c -x 16 --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/5.0.0/xformers-0.0.17.dev449-cp310-cp310-manylinux2014_x86_64.whl'
+COPY /data/whl/xformers-0.0.17.dev449-cp310-cp310-manylinux2014_x86_64.whl /wheel.whl
 
 FROM python:3.10.9-slim
+
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
 
 ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1
 
 RUN --mount=type=cache,target=/root/.cache/pip \
   pip install torch==1.13.1+cu117 torchvision --extra-index-url https://download.pytorch.org/whl/cu117
+
+COPY sources.list /etc/apt/sources.list
 
 RUN apt-get update && apt install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
 
@@ -47,6 +55,17 @@ COPY --from=download /repositories/ ${ROOT}/repositories/
 RUN mkdir ${ROOT}/interrogate && cp ${ROOT}/repositories/clip-interrogator/data/* ${ROOT}/interrogate
 RUN --mount=type=cache,target=/root/.cache/pip \
   pip install -r ${ROOT}/repositories/CodeFormer/requirements.txt
+
+#RUN git clone https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379
+#RUN git clone https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1
+#RUN git clone https://github.com/mlfoundations/open_clip.git@bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b
+
+#RUN --mount=type=cache,target=/root/.cache/pip  pip install pyngrok 
+#RUN python ./GFPGAN/setup.py install
+#RUN python ./CLIP/setup.py install
+#RUN python ./open_clip/setup.py install
+
+
 
 RUN --mount=type=cache,target=/root/.cache/pip \
   pip install pyngrok \
