@@ -1,2 +1,6 @@
 /.devcontainer
 /docker-compose.override.yml
+data/whl
+services/AUTOMATIC1111/wheel.whl
+output/
+data/
