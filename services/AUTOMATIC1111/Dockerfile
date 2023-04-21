@@ -21,7 +21,11 @@ RUN . /clone.sh clip-interrogator https://github.com/pharmapsychotic/clip-interr
 FROM alpine:3.17 as xformers
 #RUN apk add --no-cache aria2
 #RUN aria2c -x 16 --dir / --out wheel.whl 'https://github.com/AbdBarho/stable-diffusion-webui-docker/releases/download/5.0.0/xformers-0.0.17.dev449-cp310-cp310-manylinux2014_x86_64.whl'
+<<<<<<< HEAD
 COPY wheel.whl /wheel.whl
+=======
+COPY /data/whl/xformers-0.0.17.dev449-cp310-cp310-manylinux2014_x86_64.whl /wheel.whl
+>>>>>>> 278404a5d4d037008e4d958bc0449ffcea1c7042
 
 FROM python:3.10.9-slim
 
